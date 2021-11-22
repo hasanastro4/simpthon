@@ -1,31 +1,62 @@
-'''
-    list of potential
-	input: numpy    position      x
-	output: scalar  potential     pot
-	        numpy   acceleration  acc
-            numpy   tide          	
-'''
+"""
+potential.py : class implementing potential
+
+parameters
+----------
+x : array_like
+    position [x,y,z].
+
+returns
+-------
+pot : scalar
+    potential.
+
+	
+|		
+"""
+
+#History: 16-12-2020 -    written           - Hasanuddin
+#         08-11-2020 -  __str__ added       - Hasanuddin 
+
 from abc import ABC, abstractmethod
 import numpy as np
-from math import sqrt
+from math import sqrt,log
 
 class potential(ABC):
     @abstractmethod
+    
+	
     def pot(x):
+        r""" return scalar potential :math:`\Phi` at given position :math:`x`. """
         pass
 
     def acc(x):
+        r""" return vector acceleration :math:`a` at given position :math:`x`. """
         pass
 
     def tid(x):
+        r""" return tensor tidal force :math:`T` at given position :math:`x`. 
+        
+        |
+        """
+        pass
+		
+    def mass(x):
+        r""" return scalar mass :math:`m` inside radius :math:`r`. """
         pass
 
-
 class osilator(potential):
+    r""" Harmonik oscilator potential:
+    
+    .. math:: \Phi (x) = \frac{1}{2} k x^2. 
+    
+    """
+	
     def __init__(self,k,m):
         self.k = k 
         self.m = m
-		
+    def __str__(self):
+	    return "potential:osilator(k="+str(self.k)+",m="+str(self.m)+")"		
     def pot(self,x):
         return 0.5*self.k*x[0]*x[0]
     def acc(self,x) :
@@ -36,9 +67,23 @@ class osilator(potential):
         a = self.acc(x)
         return x.dot(x)*sqrt(a.dot(a))
 		
+    r"""
+	
+    
+    \n \n
+    """
+    
 class pointmass(potential):
+    r""" Point mass potential: 
+    
+    .. math:: \Phi (x) = -\frac{GM}{r}.
+    
+    """
+    
     def __init__(self,GM):
         self.GM = GM
+    def __str__(self):
+	    return "potential:pointmass(GM="+str(self.GM)+")"
     def pot(self,x):
         return -self.GM/sqrt(x.dot(x))
     def acc(self,x):
@@ -58,10 +103,55 @@ class pointmass(potential):
         return self.GM
 
 class plummer(potential):
+    r"""Plummer potential :
+    
+    .. math:: \Phi (x) = -\frac{GM}{\sqrt{r^2 + b^2}}, 
+    
+    with :math:`b` scale factor.
+	
+    """
+    
     def __init__(self,GM,b):
         self.GM = GM
         self.b  = b
+    def __str__(self):
+        return "potential:plummer(GM="+str(self.GM)+",b="+str(self.b)+")"
     def pot(self,x):
-        return -self.GM/sqrt(x.dot(x)+self.b**2)
+        return -self.GM/sqrt(x.dot(x)+self.b**2)   
+    def acc(self,x):
+        return self.pot(x)*x/(x.dot(x)+self.b**2)
+    def tid(self,x):
+        #need to be implemented
+        pass
+    def mass(self,x):
+        #need implementation
+        pass
+
+class jaffe(potential):
+    r""" Jaffe potential:
+
+    .. math:: \Phi (x) = -\frac{GM}{b} \frac{\ln (1+r/b)}{(r/b)^2},
     
-		
+    with :math:`b` scale factor. 	
+    """
+	
+    def __init__(self,GM,b):
+        self.GM = GM
+        self.b  = b
+    def __str__(self):
+        return "potential:jaffe(GM="+str(self.GM)+",b="+str(self.b)+")"
+    def pot(self,x):
+        rq = x.dot(x)/self.b/self.b
+        r = sqrt(rq)
+        return -self.GM*log(1+r)/rq/self.b
+    def acc(self,x):
+        # need implementation
+        pass
+    def tid(self,x):
+        #need to be implemented
+        pass
+    def mass(self,x):
+        #need implementation
+        pass
+    
+        
