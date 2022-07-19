@@ -16,8 +16,8 @@ pot : scalar
 """
 
 #History: 16-12-2020 -    written                              - Hasanuddin
-#         08-11-2020 -  __str__ added                          - Hasanuddin 
-#         01-07-2020 -  potentials class, cluster_pot added    - Hasanuddin
+#         08-11-2021 -  __str__ added                          - Hasanuddin 
+#         01-07-2022 -  potentials class, cluster_pot added    - Hasanuddin
 
 from abc import ABC, abstractmethod
 import numpy as np
