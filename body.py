@@ -20,6 +20,9 @@ class Body():
     def get_vel(self):
         return self.__vel
 		
+    def set_mass(self,m):
+        self.__mass = m
+    
     def set_pos(self,x):
         self.__pos = x
 		
