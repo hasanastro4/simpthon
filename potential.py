@@ -15,8 +15,9 @@ pot : scalar
 |		
 """
 
-#History: 16-12-2020 -    written           - Hasanuddin
-#         08-11-2020 -  __str__ added       - Hasanuddin 
+#History: 16-12-2020 -    written                              - Hasanuddin
+#         08-11-2020 -  __str__ added                          - Hasanuddin 
+#         01-07-2020 -  potentials class, cluster_pot added    - Hasanuddin
 
 from abc import ABC, abstractmethod
 import numpy as np
@@ -155,3 +156,54 @@ class jaffe(potential):
         pass
     
         
+class potentials(potential):
+    r""" list of potential:
+
+    .. math:: \Phi (x) = \Sigma_i \Phi_i (x).
+     	
+    """
+	
+    def __init__(self,pots=[]):
+        self.__pots = pots
+        
+    def __str__(self):
+        return str([str(pi) for pi in self.__pots])
+    def pot(self,x):
+        p = 0
+        for pi in self.__pots:
+            p = p + pi.pot(x)
+        return p 
+        
+    def acc(self,x):
+        a = np.zeros(len(x))
+        for pi in self.__pots:
+            a = a + pi.acc(x)
+        return a 
+        
+    def tid(self,x):
+        #need to be implemented
+        pass
+    def mass(self,x):
+        #need implementation
+        pass
+        
+    def pots(self):
+        return self.__pots
+        
+
+class cluster_potential(potential):
+    def __init__(self, pot, X=np.array([0,0,0])):
+        self.__pot = pot
+        self.__X = X 
+    def __str__(self):
+	    return "cluster with"+str(self.__pot)
+    def pot(self,x):
+        return self.__pot.pot(x-self.__X)
+    def acc(self,x):
+        return self.__pot.acc(x-self.__X)
+    def tid(self,x):
+        return self.__pot.tid(x-self.__X)		
+    def mass(self,x):
+        return self.__pot.mass(x-self.__X)
+    def set_cluster_pos(self,X):
+        self.__X = X 
