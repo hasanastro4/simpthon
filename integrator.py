@@ -1,32 +1,46 @@
-'''
+r"""
     Integrators
-	input: numpy  position           x
-	       numpy  velocity           v
-		   scalar initial time       ti
-		   scalar final time         tf
-		   scalar timestep           dt
-		   class  potential          pot
-'''
+    input: numpy  position           x 
+           numpy  velocity           v
+           scalar initial time       ti
+           scalar final time         tf
+           scalar timestep           dt
+           class  potential          pot
+"""
 
 from abc import ABC, abstractmethod
 import potential
 import numpy as np
 
+
 class integrator(ABC):
     @abstractmethod
+
     def integrate(x,v,ti,tf,dt,pot):
+        r""" return time, position, and velocity from ti to tf.
+        ...
+        """
         pass
 
     def step(x,v,dt):
+        r""" return position and velocity after 1 step
+        ...
+        """
         pass
 		
 class leapfrog(integrator):
-    '''
+    r"""
         a Kick-Drift-Kick version of leapfrog integrator 
         for solving dynamical sistem:
-        dv/dt = a(x)
-        dx/dt = v		
-    '''
+        ..math::
+        \frac{dv}{dt} = a(x)
+        \frac{dx}{dt} = v	
+        
+        Attributes
+        ----------
+
+        		
+    """
 	
     def __init__(self,pot):
         self.pot= pot
@@ -45,14 +59,15 @@ class leapfrog(integrator):
         x =x+v*dt 
         v =v+self.pot.acc(x)*dt*0.5
         return x,v
-		
+    
+    
 class RungeKutta4(integrator):
-    '''
+    r"""
         a Runge-Kutta 4th Order integrator 
         for solving dynamical sistem:
         dv/dt = a(x)
         dx/dt = v		
-    '''
+    """
     def __init__(self,pot) :
         self.pot=pot
     def integrate(self,xi,vi,ti,tf,dt):
@@ -77,14 +92,15 @@ class RungeKutta4(integrator):
         v = v + (k1+2*k2+2*k3+k4)/6.
         x = x + (l1+2*l2+2*l3+l4)/6.		
         return x,v	
-
+    
+    
 class Forward4OSymplectic(integrator):
-    '''
+    """
         a Forward 4th Order Symplectic Integrator (Chin & Chen, 2005)
 		for solving dynamical sistem:
         dv/dt = a(x)
         dx/dt = v	
-    '''
+    """
     def __init__(self, pot):
         self.pot = pot
 	
@@ -113,13 +129,12 @@ class Forward4OSymplectic(integrator):
         v = v + self.pot.acc(x)*dt/6.		
         return x,v  		
 		
-
-class Euler(integrator):
-    '''
+class euler(integrator):
+    """
         Euler Method w(t+dt) = w(t) + dt*f(w(t)) for solving dynamical sistem:
         dv/dt = a(x)
         dx/dt = v		
-    '''
+    """
 	
     def __init__(self,pot):
         self.pot= pot
