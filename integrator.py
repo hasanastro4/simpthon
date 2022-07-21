@@ -95,7 +95,7 @@ class RungeKutta4(integrator):
     
     
 class Forward4OSymplectic(integrator):
-    """
+    r"""
         a Forward 4th Order Symplectic Integrator (Chin & Chen, 2005)
 		for solving dynamical sistem:
         dv/dt = a(x)
@@ -130,7 +130,7 @@ class Forward4OSymplectic(integrator):
         return x,v  		
 		
 class euler(integrator):
-    """
+    r"""
         Euler Method w(t+dt) = w(t) + dt*f(w(t)) for solving dynamical sistem:
         dv/dt = a(x)
         dx/dt = v		
