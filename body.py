@@ -5,8 +5,8 @@
 import potential
 
 class Body():
-    """
-        body
+    """class representing a body
+        
     """
     def __init__(self, m, x, v):
         self.__mass= m
