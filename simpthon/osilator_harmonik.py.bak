@@ -4,12 +4,12 @@
 '''
 
 import pickle
-#import integrator
-#import potential
+import integrator
+import potential
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-#import time_step
+import time_step
 
 def simulate(k,m,x0,v0,t0,tf,dt,fname=' ',method='leapfrog',timestep='constant_time',eps=0.1,amp=1):
     oh = potential.osilator(k,m)

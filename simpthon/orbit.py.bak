@@ -5,7 +5,7 @@
 import pickle
 #import integrator
 #import potential
-#import time_step
+import time_step
 import numpy as np
 import matplotlib.pyplot as plt
 import sys

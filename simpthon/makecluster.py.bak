@@ -40,7 +40,7 @@ def plummer(n,a=1,G=1,M=1,seed=None,diagnose_energy=False, check_quartile=False,
             g = rnd.uniform(0,0.1)
         v = sqrt(2)*q*(1.+r*r)**(-0.25)
         velo = random_orientation(v)
-        b = Body(mas,posi,velo)
+        b = body.Body(mas,posi,velo)
         nb.add(b)
     if diagnose_energy:
         KE = 0

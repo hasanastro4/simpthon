@@ -9,7 +9,7 @@
 
 ###############################################################################
 
-#import potential 
+import potential 
 import numpy as np
 import random as rnd
 from math import pi,sqrt

@@ -2,7 +2,7 @@
    body.py
 '''
 
-
+import potential
 
 class Body():
     """class representing a body

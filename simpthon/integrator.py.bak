@@ -9,7 +9,7 @@ r"""
 """
 
 from abc import ABC, abstractmethod
-#import potential
+import potential
 import numpy as np
 
 
