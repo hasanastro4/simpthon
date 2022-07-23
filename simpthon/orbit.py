@@ -3,9 +3,8 @@
     : particle simulation in any conservative potentials
 '''
 import pickle
-#import integrator
-#import potential
-#import time_step
+from .integrator import leapfrog, RungeKutta4, Forward4OSymplectic 
+from .time_step import constant_time, orbital_period
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -49,7 +48,7 @@ def orbit(pot, x, v, t0, tf, dt, method='leapfrog', fname=' ',timestep='constant
     """
      
     #History:
-    #    16-12-2020-written-Hasanuddin
+    #    16-12-2020-written- Hasanuddin
     #    08-11-2020-added  - Hasanuddin : runinfo added to pickle file
     
     runinfo = ("orbit(pot="+str(pot)+", x="+str(x)+", v="+str(v)+", t0="+str(t0)
@@ -59,14 +58,14 @@ def orbit(pot, x, v, t0, tf, dt, method='leapfrog', fname=' ',timestep='constant
     x = np.array(x)
     v = np.array(v)
     	
-    ig = integrator.leapfrog(pot)
+    ig = leapfrog(pot)
     if method=='rungekutta4':
-        ig = integrator.RungeKutta4(pot)
+        ig = RungeKutta4(pot)
     if method=='forward4osymplectic':
-        ig = integrator.Forward4OSymplectic(pot)
-    ts = time_step.constant_time(dt) 
+        ig = Forward4OSymplectic(pot)
+    ts = constant_time(dt) 
     if timestep =='orbital_period':
-        ts = time_step.orbital_period(dt,pot) 
+        ts = orbital_period(dt,pot) 
     time = [t0] 
     pos  = [x]
     vel  = [v]

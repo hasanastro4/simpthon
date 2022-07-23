@@ -9,7 +9,6 @@ r"""
 """
 
 from abc import ABC, abstractmethod
-#import potential
 import numpy as np
 
 
@@ -129,7 +128,7 @@ class Forward4OSymplectic(integrator):
         v = v + self.pot.acc(x)*dt/6.		
         return x,v  		
 		
-class euler(integrator):
+class Euler(integrator):
     r"""
         Euler Method w(t+dt) = w(t) + dt*f(w(t)) for solving dynamical sistem:
         dv/dt = a(x)

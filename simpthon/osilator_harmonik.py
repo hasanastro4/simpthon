@@ -4,27 +4,28 @@
 '''
 
 import pickle
-#import integrator
-#import potential
+from .integrator import Euler, leapfrog, RungeKutta4, Forward4OSymplectic
+from .potential  import osilator as osilator_pot
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-#import time_step
+from .time_step import constant_time as const_timestep
+from .time_step import position as position_based_ts
 
 def simulate(k,m,x0,v0,t0,tf,dt,fname=' ',method='leapfrog',timestep='constant_time',eps=0.1,amp=1):
-    oh = potential.osilator(k,m)
-    ig = integrator.leapfrog(oh)
+    oh = osilator_pot(k,m)
+    ig = leapfrog(oh)
     if method == 'rungekutta4':
-        ig = integrator.RungeKutta4(oh)
+        ig = RungeKutta4(oh)
     if method == 'forward4osymplectic':
-        ig = integrator.Forward4OSymplectic(oh)
+        ig = Forward4OSymplectic(oh)
     if method == 'euler':
-        ig = integrator.Euler(oh)
-    ts = time_step.constant_time(dt) 
+        ig = Euler(oh)
+    ts = const_timestep(dt) 
     if timestep =='position':
-        ts = time_step.position(dt,abs(x0))
+        ts = position_based_ts(dt,abs(x0))
         if amp!=1:
-            ts = time_step.position(dt,amp,eps) 		
+            ts = position_based_ts(dt,amp,eps) 		
     x = np.array([x0,0,0])
     v = np.array([v0,0,0])
     time = [t0] 
