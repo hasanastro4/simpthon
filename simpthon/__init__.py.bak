@@ -5,7 +5,6 @@
    
    
    ADDITIONAL NOTE:
-   -----
    
    One way to enable Python to recognise this module from any directory
    
@@ -20,10 +19,4 @@
    where hasanpath.pth file consists only of package directories row by row. 
 
    In this case, D:\HPython.  
-   -----
-   
-   another way is by setup 
 '''
-
-from . import body, hplot, integrator, makecluster, orbit, osilator_harmonik
-from . import potential, test_pot, time_step
