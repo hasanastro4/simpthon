@@ -24,24 +24,26 @@ import numpy as np
 from math import sqrt,log
 
 class potential(ABC):
+
     @abstractmethod
-    
-	
     def pot(x):
         r""" return scalar potential :math:`\Phi` at given position :math:`x`. """
         pass
 
+    @abstractmethod
     def acc(x):
         r""" return vector acceleration :math:`a` at given position :math:`x`. """
         pass
 
+    @abstractmethod
     def tid(x):
         r""" return tensor tidal force :math:`T` at given position :math:`x`. 
         
         |
         """
         pass
-		
+
+    @abstractmethod	
     def mass(x):
         r""" return scalar mass :math:`m` inside radius :math:`r`. """
         pass

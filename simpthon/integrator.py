@@ -13,32 +13,29 @@ import numpy as np
 
 
 class integrator(ABC):
+    r"""
+    integrator for solving dynamical sistem:
+    
+    .. math:: \frac{dv}{dt} = a(x)
+    
+    .. math:: \frac{dx}{dt} = v	(t)
+    
+    """
+	
     @abstractmethod
-
     def integrate(x,v,ti,tf,dt,pot):
         r""" return time, position, and velocity from ti to tf.
-        ...
         """
         pass
-
+    @abstractmethod
     def step(x,v,dt):
         r""" return position and velocity after 1 step
-        ...
         """
         pass
 		
 class leapfrog(integrator):
     r"""
-        a Kick-Drift-Kick version of leapfrog integrator 
-        for solving dynamical sistem:
-        ..math::
-        \frac{dv}{dt} = a(x)
-        \frac{dx}{dt} = v	
-        
-        Attributes
-        ----------
-
-        		
+    a Kick-Drift-Kick version of leapfrog integrator  	
     """
 	
     def __init__(self,pot):
@@ -62,10 +59,7 @@ class leapfrog(integrator):
     
 class RungeKutta4(integrator):
     r"""
-        a Runge-Kutta 4th Order integrator 
-        for solving dynamical sistem:
-        dv/dt = a(x)
-        dx/dt = v		
+    a Runge-Kutta 4th Order integrator  
     """
     def __init__(self,pot) :
         self.pot=pot
@@ -95,10 +89,7 @@ class RungeKutta4(integrator):
     
 class Forward4OSymplectic(integrator):
     r"""
-        a Forward 4th Order Symplectic Integrator (Chin & Chen, 2005)
-		for solving dynamical sistem:
-        dv/dt = a(x)
-        dx/dt = v	
+    a Forward 4th Order Symplectic Integrator (Chin & Chen, 2005)		
     """
     def __init__(self, pot):
         self.pot = pot
@@ -126,13 +117,14 @@ class Forward4OSymplectic(integrator):
         x = x + 0.5*dt*v
         #kick by 1/6
         v = v + self.pot.acc(x)*dt/6.		
-        return x,v  		
-		
+        return x,v
+    
+    
 class Euler(integrator):
     r"""
-        Euler Method w(t+dt) = w(t) + dt*f(w(t)) for solving dynamical sistem:
-        dv/dt = a(x)
-        dx/dt = v		
+    Euler Method :math:`w(t+dt) = w(t) + dt f(w(t))` 
+    
+    for :math:`w(t) = (x(t),v(t)`.	
     """
 	
     def __init__(self,pot):
