@@ -18,6 +18,10 @@ API reference
 .. autofunction:: simpthon.body.pos
 
 .. autofunction:: simpthon.body.vel
+
+.. autofunction:: simpthon.body.angmom
+
+.. autofunction:: simpthon.body.kinetic
   
 ``simpthon.integrator`` 
 -----------------------
