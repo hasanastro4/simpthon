@@ -26,13 +26,6 @@ from .potential  import potentials
 from .body       import mass, pos, vel, Body, NBody
 
 
- 
-
-def angmom(b):
-    '''
-      angular momentum given body per unit mass 
-	'''
-    return np.cross(pos(b),vel(b))*mass(b) 
 
 def omega(b):
     xc = pos(b)
