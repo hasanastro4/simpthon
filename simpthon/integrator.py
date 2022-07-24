@@ -124,7 +124,7 @@ class Euler(integrator):
     r"""
     Euler Method :math:`w(t+dt) = w(t) + dt f(w(t))` 
     
-    for :math:`w(t) = (x(t),v(t)`.	
+    for :math:`w(t) = (x(t),v(t))`.	
     """
 	
     def __init__(self,pot):

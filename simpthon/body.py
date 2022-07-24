@@ -2,13 +2,17 @@
    body.py
 '''
 
-
+import numpy as np 
 
 class Body():
     """class representing a body
         
     """
     def __init__(self, m, x, v):
+        if isinstance(x,list):
+            x = np.array(x)
+        if isinstance(v,list):
+            v = np.array(v)
         self.__mass= m
         self.__pos = x
         self.__vel = v
@@ -24,12 +28,20 @@ class Body():
         self.__mass = m
     
     def set_pos(self,x):
+        if isinstance(x,list):
+            x = np.array(x)
         self.__pos = x
 		
     def set_vel(self,v):
+        if isinstance(v,list):
+            v = np.array(v)
         self.__vel = v
 
     def set_phase_space(self,x,v):
+        if isinstance(x,list):
+            x = np.array(x)
+        if isinstance(v,list):
+            v = np.array(v)
         self.__pos = x
         self.__vel = v
 	
@@ -42,6 +54,25 @@ def pos(b):
 	
 def vel(b):
     return b.get_vel()
+    
+def angmom(b):
+    r"""
+    angular momentum per unit mass of body `b`
+    
+    .. math:: \mathbf{L} = \mathbf{r \times v}   
+        
+    """
+    return np.cross(pos(b),vel(b))
+    
+def kinetic(b):
+    r"""
+    kinetic energy per unit mass of body `b`
+    
+    .. math:: K = \frac{1}{2} \mathbf{v} \cdot \mathbf{v} 
+    
+    """
+    return 0.5*vel(b).dot(vel(b))
+
 
 class NBody():
     '''
