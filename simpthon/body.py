@@ -3,6 +3,7 @@
 '''
 
 import numpy as np 
+from math import sqrt 
 
 class Body():
     r"""class representing a body/particle
@@ -134,6 +135,61 @@ def kinetic(b):
     
     """
     return 0.5*vel(b).dot(vel(b))
+
+def radius(b):
+    r"""
+    radius of position of a body `b` i.e. :math:`r=\sqrt{\mathbf{x}}`.
+	
+	Args:
+	    b (class Body): body.
+    
+    Returns:
+        float : radius of position  of a body.
+    
+    """
+    return sqrt(pos(b).dot(pos(b)))
+	
+def vradial(b):
+    r"""
+	radial velocity
+    
+    Args:
+        b (class Body): body.
+    
+    Returns:
+        numpy array : radial velocity of a body.
+    
+    """
+    rq = radius(b)*radius(b)
+    return vel(b).dot(pos(b))/rq * pos(b)
+	
+def vtangent(b):
+    r"""
+    tangential velocity
+    
+    Args:
+        b (class Body): body.
+    
+    Returns:
+        numpy array : radial velocity of a body.
+    
+    """
+    return vel(b)-vradial(b)
+
+def omega(b):
+    r"""
+	angular frequency of body `b`
+	
+	.. math:: \Omega = \frac{v_{\mathrm{tangential}}}{r}
+    
+    Args:
+	    b (class Body): body.
+    
+    Returns:
+        float : angular frequency of a body.
+    
+    """ 
+    return sqrt(vtangent(b).dot(vtangent(b)))/radius(b)
 
 
 class NBody():
