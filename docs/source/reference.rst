@@ -36,6 +36,22 @@ API reference
 .. autofunction:: simpthon.body.kinetic
 
 |
+
+.. autofunction:: simpthon.body.radius
+
+|
+
+.. autofunction:: simpthon.body.vradial
+
+|
+
+.. autofunction:: simpthon.body.vtangent
+
+|
+
+.. autofunction:: simpthon.body.omega
+
+|
   
 ``simpthon.integrator`` 
 -----------------------
