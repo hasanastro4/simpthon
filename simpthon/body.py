@@ -5,7 +5,7 @@
 import numpy as np 
 
 class Body():
-    """class representing a body
+    r"""class representing a body/particle
         
     """
     def __init__(self, m, x, v):
@@ -18,26 +18,49 @@ class Body():
         self.__vel = v
 
     def get_mass(self):
+        r"""return mass of a body/particle
+        
+        """
         return self.__mass
+
     def get_pos (self):
+        r"""return position of a body/particle
+        
+        """
         return self.__pos
+
     def get_vel(self):
+        r"""return velocity of a body/particle
+        
+        """
         return self.__vel
 		
     def set_mass(self,m):
+        r"""set mass of a body/particle as m
+        
+        """
         self.__mass = m
     
     def set_pos(self,x):
+        r"""set position of a body/particle as :math:`\mathbf{x}`
+        
+        """
         if isinstance(x,list):
             x = np.array(x)
         self.__pos = x
 		
     def set_vel(self,v):
+        r"""set velocity of a body/particle as :math:`\mathbf{v}`
+        
+        """
         if isinstance(v,list):
             v = np.array(v)
         self.__vel = v
 
     def set_phase_space(self,x,v):
+        r"""set phase space of a body/particle as :math:`\mathbf{x,v}`
+        
+        """
         if isinstance(x,list):
             x = np.array(x)
         if isinstance(v,list):
@@ -47,12 +70,39 @@ class Body():
 	
 
 def mass(b):
+    r"""mass of a body
+    
+    Args:
+        b (class Body): body.
+    
+    Returns:
+        float: mass of a body.
+
+    """
     return b.get_mass() 
 	
 def pos(b):
+    r"""position of a body
+    
+    Args:
+        b (class Body): body.
+    
+    Returns:
+        numpy array : position of a body.
+
+    """
     return b.get_pos()
 	
 def vel(b):
+    r"""velocity of a body
+    
+    Args:
+        b (class Body): body.
+    
+    Returns:
+        numpy array : velocity of a body.
+
+    """
     return b.get_vel()
     
 def angmom(b):
@@ -60,6 +110,12 @@ def angmom(b):
     angular momentum per unit mass of body `b`
     
     .. math:: \mathbf{L} = \mathbf{r \times v}   
+    
+    Args:
+        b (class Body): body.
+    
+    Returns:
+        numpy array : angular momentum per unit mass of a body.
         
     """
     return np.cross(pos(b),vel(b))
@@ -70,24 +126,39 @@ def kinetic(b):
     
     .. math:: K = \frac{1}{2} \mathbf{v} \cdot \mathbf{v} 
     
+    Args:
+        b (class Body): body.
+    
+    Returns:
+        float : kinetic energy per unit mass of a body.
+    
     """
     return 0.5*vel(b).dot(vel(b))
 
 
 class NBody():
-    '''
-        n-body
-    '''
+    r"""class representing a bunch of bodies or particles (N-body)
+        
+    """
     def __init__(self):
         self.__N=0
         self.__member=[]
 	
     def add(self, b):
+        r""" append a body to bodies
+        
+        """
         self.__member.append(b)
         self.__N +=1
 		
     def member(self):
+        r""" return a list of body in bodies
+        
+        """
         return self.__member
 
     def number(self):
+        r""" return number of bodies
+        
+        """
         return len(self.__member)
