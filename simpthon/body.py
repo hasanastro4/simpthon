@@ -138,7 +138,7 @@ def kinetic(b):
 
 def radius(b):
     r"""
-    radius of position of a body `b` i.e. :math:`r=\sqrt{\mathbf{x}}`.
+    radius of position of a body `b` i.e. :math:`r=\sqrt{\mathbf{x}\cdot \mathbf{x}}`.
 	
 	Args:
 	    b (class Body): body.
