@@ -23,80 +23,79 @@ from .potential  import pointmass
 from .potential  import plummer    
 from .potential  import cluster_potential 
 from .potential  import potentials  
-from .body       import mass, pos, vel, Body, NBody
+from .body       import mass, pos, vel, Body, NBody, omega, radius 
 
 
+class GalaxyCluster():
+    def __init__(self, Mgal, Mclu):
+        self.galaxyMass = Mgal
+        self.clusterMass = Mclu
+    def rtid(self,B):
+        fac = (self.clusterMass/self.galaxyMass)**(1./3)
+        x = pos(B)
+        return fac*sqrt(x.dot(x))
+    def create2stars(self,B,vel_adhoc="vcirc"):
+        X = pos(B)
+        R = radius(B)
+        Rq = R*R 
+        V = vel(B)
+        rt = self.rtid(B)
+        uX = X/R
+        pos1 = X + rt*uX 
+        pos2 = X - rt*uX
+        # this for vel_adhoc=="vcluster"  
+        vel1 = V 
+        vel2 = V
+        if vel_adhoc=="vcirc":
+            # for v propto 1/r^{1/2}
+            vel1 = V*sqrt(R/(R+rt))
+            vel2 = V*sqrt(R/(R-rt))
+        elif vel_adhoc=="vomega":
+            tangent = vtangent(B)
+            uT = tangent/sqrt(tangent.dot(tangent))
+            vel1 = omega(B)*(R+rt)*uT
+            vel2 = omega(B)*(R-rt)*uT
+        b1 = Body(mass(B)/1000.,pos1,vel1)
+        b2 = Body(mass(B)/1000.,pos2,vel2)
+        return b1,b2     
+       
+    def clustermass(self):
+        return self.clusterMass
 
-def omega(b):
-    xc = pos(b)
-    vc = vel(b)
-    Rck = xc.dot(xc)  # jarak cluster kuadrat
-    Rc  = sqrt(Rck)   # jarak cluster
-    # kecepatan radial
-    radial = np.dot(vc,xc)/Rck * xc 
-    tangent = vc - radial 
-    return sqrt(tangent.dot(tangent))/Rc
+        
 
-Mgal = 1
-G = 1
-Mclu =0.00001
-CoG = (Mclu/Mgal)**(1/3.)
+mclu =0.00001
+
 # initial cluster 	
 Xclu = np.array([1,0,0])
 Vclu = np.array([0,0.5,0])
-B = Body(Mclu,Xclu,Vclu)
+B = Body(mclu,Xclu,Vclu)
 
-massa_titik = pointmass(G*Mgal)
-cluster_as_plummer = plummer(G*Mclu,0.01)
-cluster_as_point = pointmass(G*Mclu)
 
-#cluster_pot = cluster_potential(cluster_as_point)
-cluster_pot = cluster_potential(cluster_as_plummer)
+ 
 
-galaxy_cluster = potentials([massa_titik,cluster_pot])
-
-def rtid(xc):
-    return CoG*sqrt(xc.dot(xc)) 
-   
-def create2stars(B):
-    X = pos(B)
-    Rq = X.dot(X)
-    R  = sqrt(Rq)
-    V = vel(B)
-    rt = rtid(X)
-    uX = X/R
-    pos1 = X + rt*uX 
-    pos2 = X - rt*uX
-    #
-    #
-    '''
-    radial = np.dot(V,X)/Rq * X 
-    tangent = V - radial
-    uT = tangent/sqrt(tangent.dot(tangent))
-    vel1 = omega(B)*(R+rt)*uT
-    vel2 = omega(B)*(R-rt)*uT 
-    '''
-    #
-    # similar velocity to that of cluster 
-    #vel1 =V 
-    #vel2 =V 
+def run(ti, tf, dt=0.01, cluster=B, include_cluster_grav=False, G=1, mgal=1):
+    # setting galaxy+cluster
+    gc = GalaxyCluster(mgal,mass(cluster))
+    assert mass(cluster)==gc.clustermass()
     
-    # for v propto 1/r^{1/2}
-    vel1 = V*sqrt(R/(R+rt))
-    vel2 = V*sqrt(R/(R-rt))
-    
-    b1 = Body(mass(B)/1000.,pos1,vel1)
-    b2 = Body(mass(B)/1000.,pos2,vel2)
-    return b1,b2 
+    # setting potential
+    massa_titik = pointmass(G*mgal)
+    cluster_as_plummer = plummer(G*mass(cluster),0.02)
+    cluster_as_point = pointmass(G*mass(cluster))
 
-def run(ti, tf, dt=0.01, cluster=B, include_cluster_grav=False):
+    #cluster_pot = cluster_potential(cluster_as_point)
+    cluster_pot = cluster_potential(cluster_as_plummer)
+
+    galaxy_cluster = potentials([massa_titik,cluster_pot])
+    
     pot = massa_titik
     if include_cluster_grav:
         pot = galaxy_cluster
     
     stream = NBody()
     #  
-    b1,b2 = create2stars(cluster)
+    b1,b2 = gc.create2stars(cluster)
 	# mass is tcre 
     b1.set_mass(ti)
     b2.set_mass(ti)
@@ -128,7 +127,7 @@ def run(ti, tf, dt=0.01, cluster=B, include_cluster_grav=False):
             b.set_pos(xnew)
             b.set_vel(vnew)
         t = t + dt
-        b1,b2 = create2stars(cluster)
+        b1,b2 = gc.create2stars(cluster)
         b1.set_mass(t)
         b2.set_mass(t)
         stream.add(b1)
@@ -144,14 +143,13 @@ def run(ti, tf, dt=0.01, cluster=B, include_cluster_grav=False):
     plt.plot(XX,YY,'k')
     plt.scatter(0,0,s=16)
     plt.scatter(xs,ys,s=4, c=tcre, cmap='cool', vmin=ti,vmax=tf, edgecolor=['none'])
-    #plt.scatter(xs,ys,s=4, c=tcre, cmap='cool', vmin=ti,vmax=tf, edgecolor=' ' )
     plt.colorbar()
     plt.xlabel(r'$X$')
     plt.ylabel(r'$Y$')
-    #plt.axes().set_aspect('equal')
     plt.gca().set_aspect(1)
     plt.tight_layout()
     plt.show()
     #>>> norbit.run(0,3.,dt=0.001)
     print("OK")
+    return t, cluster, stream 
 
