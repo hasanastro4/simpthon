@@ -74,7 +74,8 @@ B = Body(mclu,Xclu,Vclu)
 
  
 
-def run(ti, tf, dt=0.01, cluster=B, include_cluster_grav=False, G=1, mgal=1):
+def run(ti, tf, dt=0.01, cluster=B, include_cluster_grav=False, G=1, mgal=1,
+        xlim=[0,0],ylim=[0,0]):
     # setting galaxy+cluster
     gc = GalaxyCluster(mgal,mass(cluster))
     assert mass(cluster)==gc.clustermass()
@@ -142,7 +143,12 @@ def run(ti, tf, dt=0.01, cluster=B, include_cluster_grav=False, G=1, mgal=1):
 	
     plt.plot(XX,YY,'k')
     plt.scatter(0,0,s=16)
+    plt.scatter(pos(cluster)[0], pos(cluster)[1],s=9)
     plt.scatter(xs,ys,s=4, c=tcre, cmap='cool', vmin=ti,vmax=tf, edgecolor=['none'])
+    if xlim !=[0,0]:
+        plt.xlim(xlim)
+    if ylim !=[0,0]:
+        plt.ylim(ylim)
     plt.colorbar()
     plt.xlabel(r'$X$')
     plt.ylabel(r'$Y$')
