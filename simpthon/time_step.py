@@ -39,3 +39,16 @@ class position(time_step):
         self.eps = eps
     def size(self,x):
         return 0.5*self.eta*(sqrt(x.dot(x))/self.amp+self.eps)
+
+#time-step based on r^{alpha}
+# T = eta*(r/a)^{alpha}
+class powerr(time_step):
+    def __init__(self,eta, alpha=1.5, a = 1.):
+        self.eta   = eta
+        self.alpha = alpha
+        self.scale = a
+    def size(self,x):
+        r = sqrt(x.dot(x))
+        return self.eta * (r/self.scale)**self.alpha
+
+
