@@ -3,18 +3,19 @@
     : particle simulation in any conservative potentials
 '''
 import pickle
-from .integrator import leapfrog, RungeKutta4, Forward4OSymplectic 
-from .time_step import constant_time, orbital_period
+from .integrator import leapfrog, RungeKutta4, Forward4OSymplectic
+from .time_step import constant_time, orbital_period, powerr
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
 from math import sqrt,pi
 import time as CPUtime
 
-def orbit(pot, x, v, t0, tf, dt, method='leapfrog', fname=' ',timestep='constant_time'):
+def orbit(pot, x, v, t0, tf, dt, method='leapfrog', fname=' ',
+          timestep='constant_time', alphapowerlaw=0, scaler=1):
     #Name: orbit
     """Simulate a particle in given potential
-    
+
     parameters
     ----------
     pot : object class
@@ -35,45 +36,52 @@ def orbit(pot, x, v, t0, tf, dt, method='leapfrog', fname=' ',timestep='constant
         saving file.
     timestep : str
         time-step.
+    alphapowerlaw : float
+        power law in timestep powerr i.e. dt*(r/scaler)**alphapowerlaw.
+    scaler : float
+        scaler in timestep powerr i.e. dt*(r/scaler)**alphapowerlaw.
 
     returns
     -------
     none
-		none if fname not given.    
+		none if fname not given.
     file : file
-        a binary file if fname given.		
-    
-    
+        a binary file if fname given.
+
+
     |
     """
-     
+
     #History:
     #    16-12-2020-written- Hasanuddin
     #    08-11-2020-added  - Hasanuddin : runinfo added to pickle file
-    
+
     runinfo = ("orbit(pot="+str(pot)+", x="+str(x)+", v="+str(v)+", t0="+str(t0)
 	          +", tf="+str(tf)+",dt="+str(dt)+", method="+str(method)+", fname="
-			  +str(fname)+", timestep="+str(timestep)+")")
-    
+			  +str(fname)+", timestep="+str(timestep)+", alphapowerlaw="
+              +str(alphapowerlaw)+", scaler="+str(scaler)+")")
+
     x = np.array(x)
     v = np.array(v)
-    	
+
     ig = leapfrog(pot)
     if method=='rungekutta4':
         ig = RungeKutta4(pot)
     if method=='forward4osymplectic':
         ig = Forward4OSymplectic(pot)
-    ts = constant_time(dt) 
+    ts = constant_time(dt)
     if timestep =='orbital_period':
-        ts = orbital_period(dt,pot) 
-    time = [t0] 
+        ts = orbital_period(dt,pot)
+    if timestep =='powerr':
+        ts = powerr(dt,alphapowerlaw,scaler)
+    time = [t0]
     pos  = [x]
     vel  = [v]
     step = 0
     while t0 < tf:
         X=x
         V=v
-        dt = ts.size(x)        
+        dt = ts.size(x)
         x,v=ig.step(X,V,dt)
         t0 +=dt
         step = step+1
@@ -85,33 +93,33 @@ def orbit(pot, x, v, t0, tf, dt, method='leapfrog', fname=' ',timestep='constant
     if fname !=' ' :
         with open(fname,'wb') as file:
             pickle.dump(data,file)
-    print('number of steps= '+str(step))		
+    print('number of steps= '+str(step))
 #
 
 def runinfo(fname):
     #Name :
     #     runinfo
     """read run information
-    
+
     parameters
     ----------
-	fname : str 
-        name of file 
-    
+	fname : str
+        name of file
+
     returns
     -------
     None
-    
-    """	
+
+    """
     #History
     # 08-11-2021  -  written - Hasanuddin
-    
+
     with open(fname,'rb') as file:
         data = pickle.load(file)
     print(data[-1])
-    
+
 def plot_XY(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
-    #Name: 
+    #Name:
     #    plot_XY
     """simply plot orbit
 
@@ -125,21 +133,21 @@ def plot_XY(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
         y-axis limit.
     savefig: str, optional
         name of saving figure.
-        
+
     returns
     -------
     none
         none if savefig not given.
     figure: file
         show figure and save figure if savefig given.
-    
-    
+
+
     |
     """
 
     #History
     # 17-12-2020  written Hasanuddin
-    
+
     #open data
     with open(fname,'rb') as file:
         data = pickle.load(file)
@@ -150,20 +158,21 @@ def plot_XY(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
     #vel = data[2]
     x = [xt[0] for xt in pos]
     y = [xt[1] for xt in pos]
-    
+
     plt.plot(x, y)
-    plt.axes().set_aspect(1)
+    ax = plt.gca()
+    ax.axis('equal')
     plt.xlabel('x')
     plt.ylabel('y')
     if xlim !=[0,0]:
         plt.xlim(xlim)
     if ylim !=[0,0]:
         plt.ylim(ylim)
-   
+
     if savefig!=' ' :
-        plt.savefig(savefig)    
+        plt.savefig(savefig)
     plt.show()
-#	
+#
 #def plot_ratio_VxVy_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
 #    #open data
 #    with open(fname,'rb') as file:
@@ -176,8 +185,8 @@ def plot_XY(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
 #    Y = np.array([xt[1] for xt in pos])
 #    Vx = np.array([vt[0] for vt in vel])
 #    Vy = np.array([vt[1] for vt in vel])
-#    Ratio = np.arctan2(Vy,Vx) 
-#	
+#    Ratio = np.arctan2(Vy,Vx)
+#
 #    plt.plot(time, Ratio)
 #    plt.plot(time, X )
 #    plt.xlabel('t')
@@ -187,12 +196,12 @@ def plot_XY(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
 #    if ylim !=[0,0]:
 #        plt.ylim(ylim)
 #    if savefig!=' ' :
-#        plt.savefig(savefig)    
-#    plt.show()    
+#        plt.savefig(savefig)
+#    plt.show()
 
 def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
     """ plot action (:math:`J_r , L_z`) over time
-    
+
     parameters
     ----------
     fname : str
@@ -203,7 +212,7 @@ def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
         y-axis limit.
     savefig: str, optional
         name of saving figure.
-		
+
     returns
     -------
     none
@@ -224,9 +233,9 @@ def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
     vy = np.array([v[1] for v in vel])
     Lz = x*vy - y*vx
     rq = x*x+y*y
-    rq0 = rq[0]	
+    rq0 = rq[0]
     vrq = (x*vx+y*vy)**2/rq
-	
+
     t0  = time[0]
     tf  = time[-1]
     N = len(time)
@@ -239,28 +248,28 @@ def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
     print("L = "+str(Lz[0]))
     E0 = 0.5*(vy[0]*vy[0]+vx[0]*vx[0])-1./sqrt(rq[0])
     print("E = "+str(E0))
-    a = -1/(2*E0) 
+    a = -1/(2*E0)
     print("a= "+str(a))
     e = sqrt(1+2*E0*Lz[0]*Lz[0])
     print("e= "+str(e))
     T = 2*pi*a*sqrt(a/1.)
     print("T = "+str(T))
-    Jr0the =  sqrt(2/-E0)*pi - 2*pi*Lz[0] 
+    Jr0the =  sqrt(2/-E0)*pi - 2*pi*Lz[0]
     print("Jr (theory) = "+str(Jr0the))
     print(" ")
-    
+
     #start
     CPUstart = CPUtime.time()
     flip = 0
-    sumJr=0	
+    sumJr=0
     Jr = []
     ti = []
     # 0 -> 100%
     didel = "\b"*3   # backspace 3 times
     print("Calculation in progress ... ")
-	
+
     for i in range(1,N-1):
-        sumJr = sumJr+vrq[i]*dts[i] 
+        sumJr = sumJr+vrq[i]*dts[i]
         drq = rq[i]-rq[i-1]
         drqnext=rq[i+1]-rq[i]
         if drq*drqnext <0:
@@ -270,11 +279,11 @@ def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
             ti.append(time[i])
             sumJr = 0
             flip = 0
-            
+
         progress = int(i/(N-2)*100)
         print("{0}{1:{2}}".format(didel, progress,3), end="")
         sys.stdout.flush()
-		
+
 
     Jr = np.array(Jr)
     ti = np.array(ti)
@@ -286,12 +295,12 @@ def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
     print("<Lz> ="+str(Lzmean))
     print("<dJr> ="+str(np.std(Jr)))
     print("<dLz> ="+str(np.std(Lz)))
-	
+
     # CPU time information
     print("Execution time %.3f second"%(CPUtime.time()-CPUstart))
     print(" ")
-	
-	# remove savefig extension 
+
+	# remove savefig extension
     idot = savefig.find('.')
     if idot>-1:
         savefigWOExten=savefig[:idot]
@@ -310,8 +319,8 @@ def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
         plt.ylim(ylim)
     plt.tight_layout()
     if savefig!=' ' :
-        plt.savefig(savefigWOExten+'Lz'+extfig) 
-	
+        plt.savefig(savefigWOExten+'Lz'+extfig)
+
     plt.figure(2)
     plt.plot(ti/T,Jr-Jrmean,'.')
     plt.ylabel(r'$J_r-<J_r>$',fontsize=14)
@@ -323,14 +332,14 @@ def plot_action_time(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
     plt.tight_layout()
     if savefig!=' ' :
         plt.savefig(savefigWOExten+'Jr'+extfig)
-     	
-    plt.show()   
-    
-	
+
+    plt.show()
+
+
 
 def plot_energy_time(fname,pot, type='de', xlim=[0,0],ylim=[0,0], savefig=' '):
     """ plot energy('E') :math:`E` or error ('dE') :math:`\Delta E`, relative energy error ('de') :math:`\Delta E / E_0` over time.
-    
+
     parameters
     ----------
     fname : str
@@ -345,15 +354,15 @@ def plot_energy_time(fname,pot, type='de', xlim=[0,0],ylim=[0,0], savefig=' '):
         y-axis limit.
     savefig: str, optional
         name of saving figure.
-    
+
     returns
     -------
     none
         none if savefig not given.
     figure : file
         a file containing saving figure if savefig given.
-    
-    
+
+
     |
     """
     #open data
@@ -369,7 +378,7 @@ def plot_energy_time(fname,pot, type='de', xlim=[0,0],ylim=[0,0], savefig=' '):
     E0 = KE[0] + PE[0]
     dE = Et-E0
     Error = dE/E0
-    
+
     if type =='de':
         plt.plot(time, Error)
         plt.ylabel(r'$\Delta E / E_0$')
@@ -386,5 +395,5 @@ def plot_energy_time(fname,pot, type='de', xlim=[0,0],ylim=[0,0], savefig=' '):
     if ylim !=[0,0]:
         plt.ylim(ylim)
     if savefig!=' ' :
-        plt.savefig(savefig)    
+        plt.savefig(savefig)
     plt.show()
