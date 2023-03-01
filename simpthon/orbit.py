@@ -152,13 +152,14 @@ def plot_XY(fname,xlim=[0,0],ylim=[0,0], savefig=' '):
     y = [xt[1] for xt in pos]
     
     plt.plot(x, y)
+    plt.axes().set_aspect(1)
     plt.xlabel('x')
     plt.ylabel('y')
     if xlim !=[0,0]:
         plt.xlim(xlim)
     if ylim !=[0,0]:
         plt.ylim(ylim)
-    plt.axes().set_aspect('equal')
+   
     if savefig!=' ' :
         plt.savefig(savefig)    
     plt.show()
